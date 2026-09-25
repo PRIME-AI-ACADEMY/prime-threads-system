@@ -1,0 +1,32 @@
+{
+  "name": "prime-threads-system",
+  "version": "1.1.0",
+  "description": "PRIME AI — автономная система для Threads. Фундамент (ниша, ЦА, голос, воронка, колесо рубрик), радар идей по 7 источникам, движок текста (13 формул хуков 2026, анти-ИИ фильтр, red-line чек, прогноз), банк медиа (ffmpeg + срез EXIF + CDN), почасовой контент-план, публикация через Postiz (основной путь) или Threads Graph API (продвинутый: ответы, инсайты, автопилот), движок ответов на комментарии, аналитика с обучением на своих данных и облачный автопилот через GitHub Actions.",
+  "author": {
+    "name": "PRIME AI Academy"
+  },
+  "homepage": "https://github.com/PRIME-AI-ACADEMY/prime-threads-system",
+  "repository": "https://github.com/PRIME-AI-ACADEMY/prime-threads-system",
+  "license": "Proprietary",
+  "keywords": [
+    "threads",
+    "meta",
+    "postiz",
+    "автопостинг",
+    "автоматизация",
+    "контент",
+    "хуки",
+    "воронка",
+    "рост",
+    "аналитика",
+    "автопилот",
+    "reach",
+    "growth",
+    "ai-agent",
+    "медиа",
+    "cdn",
+    "github-actions",
+    "облако",
+    "ffmpeg"
+  ]
+}

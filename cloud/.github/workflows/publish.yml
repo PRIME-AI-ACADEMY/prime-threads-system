@@ -1,0 +1,54 @@
+# Публикация в Threads по расписанию — работает, когда ноутбук закрыт.
+# Кладётся в репозиторий threads-cloud по пути .github/workflows/publish.yml
+name: publish-threads
+
+on:
+  schedule:
+    # Каждый час. Время ВСЕГДА UTC. Киев летом = UTC+3, значит 06:00 UTC = 09:00 по Киеву.
+    # Диапазон 6-20 UTC = 09:00–23:00 по Киеву.
+    - cron: "5 6-20 * * *"
+  workflow_dispatch:      # кнопка «Run workflow» во вкладке Actions
+
+permissions:
+  contents: write         # чтобы вернуть обновлённые статусы очереди в репозиторий
+
+concurrency:
+  group: publish-threads  # два запуска одновременно не пойдут
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Опубликовать посты, у которых подошёл слот
+        env:
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+          THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+          THREADS_HOME: ${{ github.workspace }}
+        run: python3 scripts/queue.py publish-due --window 35
+
+      - name: Вернуть статусы в репозиторий
+        run: |
+          git config user.name  "threads-autopilot"
+          git config user.email "actions@github.com"
+          git add queue/ || true
+          if git diff --cached --quiet; then
+            echo "нечего публиковать — очередь без изменений"
+          else
+            git commit -m "publish: $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase --autostash
+            git push
+          fi
+
+      - name: Остаток суточной квоты
+        if: always()
+        env:
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+          THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+        run: python3 scripts/threads_api.py limits || true

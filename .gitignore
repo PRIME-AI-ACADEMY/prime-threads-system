@@ -1,0 +1,19 @@
+# Секреты — никогда в репозиторий
+.env
+.env.*
+*.token
+
+# Личные данные пользователя (живут в ~/Claude/threads/, но на всякий случай)
+queue/published.jsonl
+queue/queue.jsonl
+bank/
+profile/
+memory/
+inbox/
+media.config.json
+
+# Системное
+.DS_Store
+__pycache__/
+*.pyc
+node_modules/

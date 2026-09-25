@@ -1,0 +1,30 @@
+# Токен Threads живёт 60 дней. Задача раз в месяц проверяет, сколько ему осталось,
+# и падает с понятной ошибкой, если пора обновлять — GitHub пришлёт письмо.
+name: check-threads-token
+
+on:
+  schedule:
+    - cron: "0 9 1 * *"   # 1-го числа каждого месяца, 09:00 UTC
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Сколько живёт токен
+        env:
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+        run: |
+          resp=$(curl -s "https://graph.threads.net/refresh_access_token?grant_type=th_refresh_token&access_token=$THREADS_ACCESS_TOKEN")
+          echo "$resp" > resp.json
+          python3 - <<'PY'
+          import json, sys
+          d = json.load(open("resp.json"))
+          if "access_token" not in d:
+              print("ПРОДЛЕНИЕ НЕ ПРОШЛО:", d)
+              sys.exit(1)
+          days = d.get("expires_in", 0) // 86400
+          print(f"Токен продлён, осталось дней: {days}")
+          print("ВАЖНО: впиши новый токен в Settings -> Secrets -> THREADS_ACCESS_TOKEN")
+          print("Новый токен:", d["access_token"][:12] + "..." + d["access_token"][-6:])
+          PY

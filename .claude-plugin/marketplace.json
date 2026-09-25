@@ -1,0 +1,17 @@
+{
+  "name": "prime-threads",
+  "owner": {
+    "name": "PRIME AI Academy"
+  },
+  "metadata": {
+    "description": "Маркетплейс PRIME AI: система для Threads. Установка: /plugin marketplace add PRIME-AI-ACADEMY/prime-threads-system → /plugin install prime-threads-system@prime-threads"
+  },
+  "plugins": [
+    {
+      "name": "prime-threads-system",
+      "source": "./",
+      "version": "1.1.0",
+      "description": "PRIME AI Threads — агент, который сам ищет темы, пишет посты твоим голосом, публикует по расписанию через Postiz, отвечает на комментарии и учится на своей статистике."
+    }
+  ]
+}
