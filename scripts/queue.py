@@ -181,6 +181,31 @@ def cmd_fresh(a):
     print(json.dumps({"fresh": not hits, "collisions": hits}, ensure_ascii=False, indent=2))
 
 
+def cmd_log(a):
+    """Записать в журнал то, что ушло мимо очереди (например, прямо в Postiz).
+
+    Без этого проверка свежести (`fresh`) слепа: она смотрит в published.jsonl,
+    а в режиме Postiz посты туда не попадают.
+    """
+    data = json.load(open(a.file, encoding="utf-8")) if a.file else json.load(sys.stdin)
+    items = data if isinstance(data, list) else [data]
+    n = 0
+    for it in items:
+        rec = {"id": it.get("id") or f'{it.get("day","?")}-{it.get("slot","?")}',
+               "slot": it.get("utc") or it.get("slot"),
+               "topic": it.get("topic") or it.get("title") or (it.get("parts") or [""])[0][:120],
+               "rubric": it.get("rubric"), "formula": it.get("formula"),
+               "window": it.get("window"), "type": it.get("type"),
+               "goal": it.get("goal"), "land": it.get("land"),
+               "channel": a.channel, "published_id": it.get("postId"),
+               "text": (it.get("parts") or [it.get("text", "")])[0],
+               "logged": dt.datetime.now().astimezone().isoformat()}
+        append(rec)
+        n += 1
+    print(json.dumps({"logged": n, "channel": a.channel,
+                      "note": "теперь queue.py fresh увидит эти темы"}, ensure_ascii=False))
+
+
 def cmd_stats(a):
     q, pub = read(), read(PUBLISHED)
     by_status, by_rubric, by_formula = {}, {}, {}
@@ -255,6 +280,8 @@ def main():
     p = s.add_parser("mark"); p.add_argument("--id", required=True); p.add_argument("--status", required=True)
     p.add_argument("--published-id", dest="published_id"); p.set_defaults(fn=cmd_mark)
     p = s.add_parser("fresh"); p.add_argument("--topic", required=True); p.add_argument("--days", type=int, default=14); p.set_defaults(fn=cmd_fresh)
+    p = s.add_parser("log"); p.add_argument("--file")
+    p.add_argument("--channel", default="postiz"); p.set_defaults(fn=cmd_log)
     s.add_parser("stats").set_defaults(fn=cmd_stats)
     p = s.add_parser("publish-due"); p.add_argument("--dry-run", action="store_true")
     p.add_argument("--window", type=int, default=30); p.set_defaults(fn=cmd_publish_due)
