@@ -44,6 +44,8 @@ EVENT_WORDS = re.compile(
 
 TAG_RE = re.compile(r"<[^>]+>")
 MAX_CHARS = 500
+MAX_BYTES = 500   # Postiz проверяет длину Threads в БАЙТАХ UTF-8: кириллица ≈ 2 байта
+                  # на символ, то есть реально влезает ~250 знаков, а не 500
 
 
 def visible(t):
@@ -71,6 +73,15 @@ def is_list_thread(u):
     return u.get("type") == "thread" and bool(LIST_PROMISE.search(visible(u["parts"][0])))
 
 
+def has_item1(text):
+    """Пункт 1 на месте: либо подписан («Этап 1»), либо после абзаца-обещания
+    в открывающем посте уже стоят минимум две строки-пункта."""
+    if LIST_ITEM1.search(text):
+        return True
+    body = text.split("\n\n", 1)
+    return len(body) > 1 and len([l for l in body[1].split("\n") if l.strip()]) >= 2
+
+
 def check(units):
     problems = []
     for u in units:
@@ -80,6 +91,9 @@ def check(units):
         for i, raw in enumerate(parts):
             t = visible(raw)
             where = f"{tag} [{'пост' if i == 0 else f'комм {i}'}]"
+            if len(t.encode()) > MAX_BYTES:
+                problems.append((where, f"{len(t.encode())} байт UTF-8 — Postiz "
+                                         f"не примет больше {MAX_BYTES}, разбей на два поста"))
             if len(t) > MAX_CHARS:
                 problems.append((where, f"длина {len(t)} (видимых знаков, лимит {MAX_CHARS})"))
             if "—" in t or "–" in t:
@@ -106,7 +120,7 @@ def check(units):
                 problems.append((tag, "ветка про событие: не сказано, что бесплатно"))
 
         # Ветка-список обязана нести пункт 1 в открывающем посте, а не обещание
-        if is_list_thread(u) and not LIST_ITEM1.search(visible(parts[0])):
+        if is_list_thread(u) and not has_item1(visible(parts[0])):
             problems.append((tag, "список-тред: в первом посте нет пункта 1"))
 
     return problems
