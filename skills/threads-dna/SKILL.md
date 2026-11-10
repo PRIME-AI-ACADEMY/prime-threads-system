@@ -9,9 +9,15 @@ description: "Собирает ДНК аккаунта Threads: ниша, ядр
 
 ## Если уже есть материалы
 
-Сначала прочитай и переиспользуй, не спрашивай заново:
-`~/Claude/business-dna.md`, `~/Claude/audience.md`, `~/Claude/offer.md`,
-`~/Claude/tone-of-voice.md`, `~/Claude/content-rules.md`, `MEMORY.md`.
+Сначала прочитай и переиспользуй, не спрашивай заново. Ищи в таком порядке:
+1. Папка `profile/` контент-завода в текущей папке проекта (плагин prime-content-system):
+   `business-dna.md` (раздел «Актуальный запуск» главнее всего), `audience.md`, `offer.md`,
+   `tone-of-voice.md` (с «Мои запреты»), `funnels.md`, `hunt-ladder.md`, `foundation.html`.
+2. Папка `материалы/` курса Prime AI (`01–06`, `tone-of-voice.md`), если она есть.
+3. `~/Claude/business-dna.md`, `~/Claude/audience.md`, `~/Claude/offer.md`,
+   `~/Claude/tone-of-voice.md`, `~/Claude/content-rules.md`, `MEMORY.md`.
+Ниша может быть любой (услуги, товары, эксперт, локальный бизнес): темы, рубрики и примеры
+бери из этих файлов, а не из примеров плагина.
 Спрашивай только то, чего там нет или что специфично для Threads.
 
 ## Интервью (задавай блоками по 3–4 вопроса, не анкетой на 30 пунктов)
@@ -71,7 +77,7 @@ description: "Собирает ДНК аккаунта Threads: ниша, ядр
 `~/Claude/threads/profile/funnel.md`: лестница, что в шапке, куда ведут CTA,
 5 рабочих формулировок CTA (по `references/funnel.md`).
 
-`~/Claude/threads/profile/rubrics.md`: её рубрики под набор дня **3 профессиональных
+`~/Claude/threads/profile/rubrics.md`: рубрики аккаунта под набор дня **3 профессиональных
 + 1 широкая тема + 1 про себя + 1 свободная**, с привязкой к окнам и формулам хуков.
 Отдельной строкой — название серийной рубрики и её постоянное окно.
 
